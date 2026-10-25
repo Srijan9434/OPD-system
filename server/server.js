@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import connectDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
+import doctorRoutes from './routes/doctorRoutes.js'
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/doctor', doctorRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' })
