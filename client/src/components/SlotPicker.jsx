@@ -12,7 +12,8 @@ const days = Array.from({ length: 7 }, (_, i) => {
   return d
 })
 
-export default function SlotPicker({ onChange }) {
+export default function SlotPicker({ onChange, availableSlots, bookedSlots = [] }) {
+  const times = Array.isArray(availableSlots) && availableSlots.length > 0 ? availableSlots : TIMES
   const [dayIndex, setDayIndex] = useState(0)
   const [slot, setSlot] = useState('')
 
@@ -23,6 +24,7 @@ export default function SlotPicker({ onChange }) {
   }
 
   const pickSlot = (t) => {
+    if (bookedSlots.includes(t)) return
     setSlot(t)
     onChange({ date: toYMD(days[dayIndex]), slot: t })
   }
@@ -34,28 +36,40 @@ export default function SlotPicker({ onChange }) {
           <div
             key={i}
             onClick={() => pickDay(i)}
-            className={`min-w-16 cursor-pointer rounded-full border py-6 text-center ${
-              dayIndex === i ? 'border-primary bg-primary text-white' : 'border-gray-300'
+            className={`min-w-16 cursor-pointer rounded-full border py-6 text-center transition-all ${
+              dayIndex === i ? 'border-primary bg-primary text-white shadow-xs' : 'border-gray-300 hover:border-gray-400'
             }`}
           >
-            <p>{DAY_NAMES[d.getDay()]}</p>
-            <p>{d.getDate()}</p>
+            <p className="text-xs font-semibold">{DAY_NAMES[d.getDay()]}</p>
+            <p className="text-lg font-bold">{d.getDate()}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
-        {TIMES.map((t) => (
-          <p
-            key={t}
-            onClick={() => pickSlot(t)}
-            className={`shrink-0 cursor-pointer rounded-full border px-5 py-2 text-sm font-light ${
-              slot === t ? 'border-primary bg-primary text-white' : 'border-gray-300 text-gray-400'
-            }`}
-          >
-            {t}
-          </p>
-        ))}
+      <div className="mt-4 flex gap-2.5 overflow-x-auto pb-2 flex-wrap">
+        {times.map((t) => {
+          const isBooked = bookedSlots.includes(t)
+          const isSelected = slot === t
+
+          return (
+            <button
+              key={t}
+              type="button"
+              disabled={isBooked}
+              onClick={() => pickSlot(t)}
+              className={`shrink-0 rounded-full border px-4 py-2 text-xs font-medium transition-all ${
+                isSelected
+                  ? 'border-primary bg-primary text-white shadow-xs'
+                  : isBooked
+                  ? 'border-gray-200 bg-gray-100 text-gray-300 cursor-not-allowed line-through'
+                  : 'border-gray-300 text-gray-600 hover:border-primary hover:text-primary cursor-pointer'
+              }`}
+              title={isBooked ? 'Slot already booked by another patient' : 'Available for booking'}
+            >
+              {t} {isBooked && '(Booked)'}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

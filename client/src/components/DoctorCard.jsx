@@ -9,7 +9,7 @@ export default function DoctorCard({ doctor }) {
       className="cursor-pointer overflow-hidden rounded-xl border border-blue-100 transition hover:-translate-y-2"
     >
       <img
-        src={doctor.image}
+        src={doctor.image || '/doctors/doc1.png'}
         alt={doctor.name}
         className="h-56 w-full bg-[#eaefff] object-cover object-top"
       />
